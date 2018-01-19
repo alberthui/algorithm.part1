@@ -24,10 +24,34 @@ public class FastCollinearPoints {
 
     // the line segments
     public LineSegment[] segments(){
-        List<LineSegment> result = new ArrayList<>();
-        for (int i=0;i<points.length-3;i++) {
-            for (int j = i + 1; j < points.length - 2; j++) {
 
+        List<LineSegment> result = new ArrayList<>();
+
+        for (int i=0;i<points.length;i++) {
+            Point[] pointsBySlopeOrder = Arrays.copyOfRange(points, i, points.length-1);
+            Arrays.sort(pointsBySlopeOrder, points[i].slopeOrder());
+            //equals = Double.NEGATIVE_INFINITY
+            //if 2 consequently the same then it's the same
+            double previousSlope = pointsBySlopeOrder[0].slopeTo(points[i]);
+            int consequent = 0;
+            for (int j=0; j < pointsBySlopeOrder.length; j++) {
+                //calculate the slope
+                if (previousSlope == pointsBySlopeOrder[j].slopeTo(points[i])) {
+                    consequent++;
+                } else {
+                    if (consequent >= 2) {
+                        Point[] currentLineSegment = new Point[consequent+2];
+                        currentLineSegment[0] = pointsBySlopeOrder[0];
+                        for (int k=1; k<=consequent+1;k++) {
+                            currentLineSegment[k] = pointsBySlopeOrder[j-consequent+k-2];
+                        }
+                        //sort the current line segment by position
+                        Arrays.sort(currentLineSegment);
+                        result.add(new LineSegment(currentLineSegment[0],currentLineSegment[currentLineSegment.length-1]));
+                    }
+                    previousSlope = pointsBySlopeOrder[j].slopeTo(points[i]);
+                    consequent=0;
+                }
             }
         }
         lineSegments = result.toArray(new LineSegment[result.size()]);
