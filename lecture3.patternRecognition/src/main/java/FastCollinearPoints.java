@@ -3,22 +3,42 @@ import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class FastCollinearPoints {
-    Point[] points;
-    LineSegment[] lineSegments = null;
+    private Point[] points;
+    private LineSegment[] lineSegments = null;
 
     // finds all line segments containing 4 or more points
     public FastCollinearPoints(Point[] points){
-        this.points = points;
+        if (points == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.points = new Point[points.length];
+
+        for (int i=0; i<points.length; i++) {
+            if (points[i] == null) {
+                throw new IllegalArgumentException();
+            }
+            this.points[i] = points[i];
+        }
+
+        Arrays.sort(this.points);
+
+        Point lastPoint = this.points[points.length-1];
+        for (Point p : this.points) {
+            if (p.compareTo(lastPoint) == 0) {
+                throw new IllegalArgumentException();
+            }
+            lastPoint = p;
+        }
     }
 
     // the number of line segments
     public int numberOfSegments(){
-        if (lineSegments==null) {
-            segments();
-        }
+        segments();
         return lineSegments.length;
     }
 
@@ -28,15 +48,16 @@ public class FastCollinearPoints {
         List<LineSegment> result = new ArrayList<>();
 
         for (int i=0;i<points.length;i++) {
-            Point[] pointsBySlopeOrder = Arrays.copyOfRange(points, i, points.length-1);
+            Point[] pointsBySlopeOrder = Arrays.copyOf(points, points.length);
             Arrays.sort(pointsBySlopeOrder, points[i].slopeOrder());
             //equals = Double.NEGATIVE_INFINITY
             //if 2 consequently the same then it's the same
             double previousSlope = pointsBySlopeOrder[0].slopeTo(points[i]);
             int consequent = 0;
-            for (int j=0; j < pointsBySlopeOrder.length; j++) {
+            for (int j=0; j<=pointsBySlopeOrder.length; j++) {
                 //calculate the slope
-                if (previousSlope == pointsBySlopeOrder[j].slopeTo(points[i])) {
+                if (j!=pointsBySlopeOrder.length &&
+                        previousSlope == pointsBySlopeOrder[j].slopeTo(points[i])) {
                     consequent++;
                 } else {
                     if (consequent >= 2) {
@@ -47,10 +68,14 @@ public class FastCollinearPoints {
                         }
                         //sort the current line segment by position
                         Arrays.sort(currentLineSegment);
-                        result.add(new LineSegment(currentLineSegment[0],currentLineSegment[currentLineSegment.length-1]));
+                        if (currentLineSegment[0].compareTo(points[i]) == 0) {
+                            result.add(new LineSegment(currentLineSegment[0], currentLineSegment[currentLineSegment.length - 1]));
+                        }
                     }
-                    previousSlope = pointsBySlopeOrder[j].slopeTo(points[i]);
-                    consequent=0;
+                    if (j!=pointsBySlopeOrder.length) {
+                        previousSlope = pointsBySlopeOrder[j].slopeTo(points[i]);
+                    }
+                    consequent = 0;
                 }
             }
         }

@@ -7,19 +7,38 @@ import edu.princeton.cs.algs4.StdDraw;
 import edu.princeton.cs.algs4.StdOut;
 
 public class BruteCollinearPoints {
-    Point[] points;
-    LineSegment[] lineSegments = null;
+    private Point[] points;
+    private LineSegment[] lineSegments = null;
 
     // finds all line segments containing 4 points
     public BruteCollinearPoints(Point[] points) {
-        this.points = points;
+        if (points == null) {
+            throw new IllegalArgumentException();
+        }
+
+        this.points = new Point[points.length];
+
+        for (int i=0; i<points.length; i++) {
+            if (points[i] == null) {
+                throw new IllegalArgumentException();
+            }
+            this.points[i] = points[i];
+        }
+
+        Arrays.sort(this.points);
+
+        Point lastPoint = this.points[points.length-1];
+        for (Point p : this.points) {
+            if (p.compareTo(lastPoint) == 0) {
+                throw new IllegalArgumentException();
+            }
+            lastPoint = p;
+        }
     }
 
     // the number of line segments
     public int numberOfSegments() {
-        if (lineSegments==null) {
-            segments();
-        }
+        segments();
         return lineSegments.length;
     }
 
