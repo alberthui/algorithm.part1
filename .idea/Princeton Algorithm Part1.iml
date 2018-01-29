@@ -8,6 +8,7 @@
       <sourceFolder url="file://$MODULE_DIR$/lecture3.patternRecognition/src/main/java" isTestSource="false" />
       <sourceFolder url="file://$MODULE_DIR$/lib" type="java-resource" />
       <sourceFolder url="file://$MODULE_DIR$/lecture3.patternRecognition/src/resource" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/lecture4.eightPuzzle/src/main/java" isTestSource="false" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
