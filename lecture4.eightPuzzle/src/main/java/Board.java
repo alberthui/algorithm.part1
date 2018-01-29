@@ -1,6 +1,13 @@
 import edu.princeton.cs.algs4.StdOut;
+import sun.jvm.hotspot.opto.Block;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
+import java.util.List;
 
 public class Board {
+    private static final int SPACE = 0;
     private int[][] blocks;
 
     // construct a board from an n-by-n array of blocks
@@ -12,13 +19,7 @@ public class Board {
             throw new IllegalArgumentException();
         }
 
-        this.blocks = new int[blocks.length][blocks.length];
-
-        for (int i=0; i<blocks.length; i++) {
-            for (int j=0; j<blocks[i].length; j++) {
-                this.blocks[i][j] = blocks[i][j];
-            }
-        }
+        this.blocks = clone(blocks);
     }
 
     // board dimension n
@@ -65,7 +66,58 @@ public class Board {
 
     // all neighboring boards
     public Iterable<Board> neighbors() {
-        return null;
+        //get the space position
+        int x = blocks.length;
+        int y = blocks.length;
+        List<Board> list = new ArrayList<>();
+
+        for (int i=0; i<blocks.length; i++) {
+            for (int j=0; j<blocks[i].length; j++) {
+                if (blocks[i][j] == SPACE) {
+                    x = i;
+                    y = j;
+                    break;
+                }
+            }
+        }
+
+        if (x + 1 < blocks.length) {
+            int[][] newBlocks = clone(blocks);
+            newBlocks[x][y] = newBlocks[x+1][y];
+            newBlocks[x+1][y] = SPACE;
+            list.add(new Board(newBlocks));
+        }
+        if (x - 1 >= 0) {
+            int[][] newBlocks = clone(blocks);
+            newBlocks[x][y] = newBlocks[x-1][y];
+            newBlocks[x-1][y] = SPACE;
+            list.add(new Board(newBlocks));
+        }
+        if (y + 1 < blocks.length) {
+            int[][] newBlocks = clone(blocks);
+            newBlocks[x][y] = newBlocks[x][y+1];
+            newBlocks[x][y+1] = SPACE;
+            list.add(new Board(newBlocks));
+        }
+        if (y - 1 >= 0) {
+            int[][] newBlocks = clone(blocks);
+            newBlocks[x][y] = newBlocks[x][y-1];
+            newBlocks[x][y-1] = SPACE;
+            list.add(new Board(newBlocks));
+        }
+
+        return list;
+    }
+
+    private int[][] clone(int[][] blocks) {
+        int[][] result = new int[blocks.length][blocks.length];
+
+        for (int i=0; i<blocks.length; i++) {
+            for (int j=0; j<blocks[i].length; j++) {
+                result[i][j] = blocks[i][j];
+            }
+        }
+        return result;
     }
 
     // string representation of this board (in the output format specified below)
@@ -89,6 +141,13 @@ public class Board {
 
         Board n = new Board(blocks);
         StdOut.println(n);
+        StdOut.println(n.neighbors());
+
+        int[][] blocks2 = {{1,0,2}, {4,3,6},{5,7,8}};
+
+        Board n2 = new Board(blocks2);
+        StdOut.println(n2);
+        StdOut.println(n2.neighbors());
 
     }
 }
